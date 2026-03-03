@@ -4,8 +4,9 @@ COPY gradlew .
 COPY gradle gradle
 COPY build.gradle.kts .
 COPY settings.gradle.kts .
+RUN chmod +x gradlew && ./gradlew dependencies --no-daemon
 COPY src src
-RUN chmod +x gradlew && ./gradlew build -x test
+RUN ./gradlew build -x test --no-daemon
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app

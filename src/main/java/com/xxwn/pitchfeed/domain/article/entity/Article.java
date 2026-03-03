@@ -32,6 +32,7 @@ public class Article {
     @Column(nullable = false, unique = true, columnDefinition = "TEXT")
     private String url;
 
+    @Column(columnDefinition = "TEXT")
     private String author;
 
     @Column(columnDefinition = "TEXT")
@@ -40,6 +41,7 @@ public class Article {
     @Column(columnDefinition = "TEXT")
     private String summary;
 
+    @Column(columnDefinition = "TEXT")
     private String tags;
 
     private LocalDateTime publishedAt;
