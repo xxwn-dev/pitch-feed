@@ -26,6 +26,9 @@ public class DiscordWebhookService {
     @Value("${app.base-url}")
     private String baseUrl;
 
+    @Value("${app.react-url}")
+    private String reactUrl;
+
     public void send(List<Article> articles) {
         if(articles.isEmpty()) return;
 
@@ -55,7 +58,7 @@ public class DiscordWebhookService {
             Map<String, Object> moreField = new LinkedHashMap<>();
             moreField.put("name", "📋 더보기");
             moreField.put("value", "[전체 %d건 보기](%s)".formatted(limited.size(),
-                    baseUrl));
+                    reactUrl));
             moreField.put("inline", false);
             fields.add(moreField);
         }
