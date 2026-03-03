@@ -1,0 +1,15 @@
+name: Batch Trigger
+
+on:
+  schedule:
+    - cron: '0 * * * *' #매시간
+  workflow_dispatch:  #수동 실행 가능
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger RSS Batch
+        run: |
+          curl -X POST ${{ secrets.RENDER_APP_URL }}/api/batch/trigger \
+               -H "X-Batch-Secret: ${{ secrets.BATCH_SECRET }}"

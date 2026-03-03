@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: pitch-feed
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: always
+    secret: ${BATCH_SECRET}
+
+  ai:
+    openai:
+      api-key: ${AI_API_KEY}
+      base-url: ${AI_BASE_URL}
+      chat:
+        options:
+          model: gemini-2.5-flash
+
+server:
+  port: 8080
+
+
