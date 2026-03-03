@@ -1,6 +1,7 @@
 package com.xxwn.pitchfeed.batch.job;
 
 import com.xxwn.pitchfeed.ai.service.ArticleSummaryService;
+import com.xxwn.pitchfeed.ai.service.DiscordWebhookService;
 import com.xxwn.pitchfeed.batch.tasklet.RssItem;
 import com.xxwn.pitchfeed.batch.tasklet.RssParser;
 import com.xxwn.pitchfeed.domain.article.entity.Article;
@@ -16,10 +17,12 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -33,6 +36,10 @@ public class RssFetchJobConfig {
     private final ArticleRepository articleRepository;
     private final RssParser rssParser;
     private final ArticleSummaryService summaryService;
+    private final DiscordWebhookService discordWebhookService;
+
+    @Value("${batch.fetch-limit:5}")
+    private int fetchLimit;
 
     @Bean
     public Job rssFetchJob() {
@@ -52,14 +59,15 @@ public class RssFetchJobConfig {
     public Tasklet rssFetchTasklet() {
         return ((contribution, chunkContext) -> {
             List<Feed> feeds = feedRepository.findAllByActiveTrue();
-            log.info("Size of Feeds: {}", feeds.size());
 
+            List<Article> newArticles = new ArrayList<>();
             for(Feed feed : feeds){
                 List<RssItem> items = rssParser.parse(feed.getUrl());
-                int savedCount = 0;
-
-                for(RssItem item : items){
-                    if(articleRepository.existsByUrl(item.getUrl())){
+                List<RssItem> limited = items.size() > fetchLimit ? items.subList(0, fetchLimit) : items;
+                log.info("feeds: {} | Parsed: {}건 → 처리 대상: {}건", feed.getName(), items.size(), limited.size());
+                for(RssItem item : limited){
+                    if(articleRepository.existsByUrl(item.getUrl()) ||
+                        articleRepository.existsByTitle(item.getTitle())){
                         continue;
                     }
                     Article article = Article.builder()
@@ -75,12 +83,12 @@ public class RssFetchJobConfig {
                             summaryService.summarize(item.getTitle(), item.getContent());
                     article.addSummary(result.summary(), result.tags());
                     articleRepository.save(article);
-                    savedCount++;
+                    newArticles.add(article);
                 }
                 feed.updateLastFetchedAt();
                 feedRepository.save(feed);
-                log.info("feed: {} | saved new: {} ", feed.getName(), savedCount );
             }
+            discordWebhookService.send(newArticles);
             return RepeatStatus.FINISHED;
         });
     }

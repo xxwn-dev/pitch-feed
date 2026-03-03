@@ -22,7 +22,6 @@ spring:
       enabled: false
     jdbc:
       initialize-schema: always
-    secret: ${BATCH_SECRET}
 
   ai:
     openai:
@@ -35,4 +34,13 @@ spring:
 server:
   port: 8080
 
+discord:
+  webhook-url: ${DISCORD_WEBHOOK_URL}
 
+batch:
+  secret: ${BATCH_SECRET}
+  fetch-limit: 5
+
+app:
+  base-url: ${APP_BASE_URL}
+  react-url: ${REACT_URL}

@@ -32,6 +32,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("org.springframework.ai:spring-ai-starter-model-openai")
 	implementation("com.rometools:rome:2.1.0") //RSS parsing
     implementation("me.paulschwarz:spring-dotenv:4.0.0")

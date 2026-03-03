@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta property="og:title" th:content="${article.title}"/>
+    <meta property="og:description" th:content="${article.summary}"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:url" th:content="${previewUrl}"/>
+    <title th:text="${article.title}">Pitch Feed</title>
+    <script th:inline="javascript">
+        window.location.replace([[${reactUrl}]] + '/articles/' + [[${article.id}]]);
+    </script>
+</head>
+<body>
+<h1 th:text="${article.title}"></h1>
+<p th:text="${article.summary}"></p>
+<p th:text="${article.tags}"></p>
+<a th:href="${article.url}" target="_blank">원문 보기</a>
+</body>
+</html>

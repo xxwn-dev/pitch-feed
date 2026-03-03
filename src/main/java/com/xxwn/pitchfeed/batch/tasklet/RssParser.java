@@ -4,9 +4,13 @@ import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 
+import java.io.StringReader;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,18 +21,28 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class RssParser {
+
+    private final RestClient restClient;
 
     public List<RssItem> parse(String feedUrl) {
         try {
+            String feedContent = restClient.get()
+                    .uri(feedUrl)
+                    .header("User-Agent", "Mozilla/5.0")
+                    .retrieve()
+                    .body(String.class);
+
             SyndFeedInput input = new SyndFeedInput();
-            SyndFeed feed = input.build(new XmlReader(URI.create(feedUrl).toURL()));
+            SyndFeed feed = input.build(new StringReader(feedContent));
 
             return feed.getEntries().stream()
                     .map(this::toRssItem)
                     .collect(Collectors.toList());
 
         } catch (Exception e) {
+            log.error("RSS 파싱 실패 - url: {}, error: {}", feedUrl, e.getMessage());
             return Collections.emptyList();
         }
     }

@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     boolean existsByUrl(String url);
+    boolean existsByTitle(String title);
 
     List<Article> findAllByOrderByPublishedAtDesc();
     List<Article> findByFeedCategoryOrderByPublishedAtDesc(String category);

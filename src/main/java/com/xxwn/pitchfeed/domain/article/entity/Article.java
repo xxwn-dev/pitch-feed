@@ -26,10 +26,10 @@ public class Article {
     @JoinColumn(name = "feed_id")
     private Feed feed;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String title;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, columnDefinition = "TEXT")
     private String url;
 
     private String author;
