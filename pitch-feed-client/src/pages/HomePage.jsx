@@ -15,7 +15,7 @@ function HomePage() {
   }, [category]);
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "24px" }}>
+    <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "24px" }}>
       <h1 style={{ marginBottom: "24px" }}>⚾ Pitch Feed</h1>
       <Link to="/feeds" style={{ fontSize: "14px", color: "#1a73e8" }}>
         피드 관리
