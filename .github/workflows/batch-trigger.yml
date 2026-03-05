@@ -2,7 +2,7 @@ name: Batch Trigger
 
 on:
   schedule:
-    - cron: '0 * * * *' #매시간
+    - cron: '0 0 13 * *' #오후 한 시
   workflow_dispatch:  #수동 실행 가능
 
 jobs:
