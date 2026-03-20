@@ -33,9 +33,6 @@ public class Article {
     private String url;
 
     @Column(columnDefinition = "TEXT")
-    private String imageUrl;
-
-    @Column(columnDefinition = "TEXT")
     private String author;
 
     @Column(columnDefinition = "TEXT")
@@ -53,11 +50,10 @@ public class Article {
     private LocalDateTime createdAt;
 
     @Builder
-    public Article(Feed feed, String title, String url, String imageUrl, String author, String content, LocalDateTime publishedAt) {
+    public Article(Feed feed, String title, String url, String author, String content, LocalDateTime publishedAt) {
         this.feed = feed;
         this.title = title;
         this.url = url;
-        this.imageUrl = imageUrl;
         this.author = author;
         this.content = content;
         this.publishedAt = publishedAt;

@@ -59,12 +59,10 @@ public class RssFetchService {
                     continue;
                 }
 
-                String imageUrl = rssParser.extractOgImage(item.getUrl());
                 Article article = Article.builder()
                         .feed(feed)
                         .title(item.getTitle())
                         .url(item.getUrl())
-                        .imageUrl(imageUrl)
                         .author(item.getAuthor())
                         .content(item.getContent())
                         .publishedAt(item.getPublishedAt())
