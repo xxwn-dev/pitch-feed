@@ -1,4 +1,4 @@
-function ArticleCard({ article }) {
+function ArticleCard({ article, onDelete }) {
   return (
     <div
       style={{
@@ -8,9 +8,35 @@ function ArticleCard({ article }) {
         marginBottom: "12px",
       }}
     >
-      <div style={{ fontSize: "12px", color: "#888", marginBottom: "6px" }}>
-        {article.feedName} | {article.category} |{" "}
-        {new Date(article.publishedAt).toLocaleDateString("ko-KR")}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+        }}
+      >
+        <div style={{ fontSize: "12px", color: "#888", marginBottom: "6px" }}>
+          {article.feedName} | {article.category} |{" "}
+          {new Date(article.publishedAt).toLocaleDateString("ko-KR")}
+        </div>
+        {onDelete && (
+          <button
+            onClick={() => onDelete(article.id)}
+            style={{
+              padding: "2px 10px",
+              backgroundColor: "#fff",
+              color: "#e53935",
+              border: "1px solid #e53935",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "12px",
+              flexShrink: 0,
+              marginLeft: "8px",
+            }}
+          >
+            삭제
+          </button>
+        )}
       </div>
       <a
         href={article.url}

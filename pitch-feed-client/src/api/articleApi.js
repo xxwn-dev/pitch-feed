@@ -17,4 +17,6 @@ export const addFeed = (feed) => api.post('/feeds', feed);
 
 export const deleteFeed = (id) => api.delete(`/feeds/${id}`);
 
+export const deleteArticle = (id) => api.delete(`/articles/${id}`);
+
 

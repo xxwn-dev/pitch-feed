@@ -25,4 +25,8 @@ public class ArticleService {
                 .orElseThrow(() -> new RuntimeException("Article not found"));
         return ArticleResponse.from(article);
     }
+
+    public void deleteArticle(Long id) {
+        articleRepository.deleteById(id);
+    }
 }

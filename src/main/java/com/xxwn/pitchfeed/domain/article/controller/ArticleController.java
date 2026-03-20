@@ -23,4 +23,10 @@ public class ArticleController {
     public ResponseEntity<ArticleResponse> getArticle(@PathVariable Long id) {
         return ResponseEntity.ok(articleService.getArticle(id));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteArticle(@PathVariable Long id) {
+        articleService.deleteArticle(id);
+        return ResponseEntity.noContent().build();
+    }
 }

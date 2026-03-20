@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getArticles } from "../api/articleApi";
+import { getArticles, deleteArticle } from "../api/articleApi";
 import ArticleCard from "../components/ArticleCard";
 import CategoryFilter from "../components/CategoryFilter";
 
@@ -14,6 +14,12 @@ function HomePage() {
       .catch((err) => console.error(err));
   }, [category]);
 
+  const handleDelete = (id) => {
+    deleteArticle(id)
+      .then(() => setArticles((prev) => prev.filter((a) => a.id !== id)))
+      .catch((err) => console.error(err));
+  };
+
   return (
     <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "24px" }}>
       <h1 style={{ marginBottom: "24px" }}>⚾ Pitch Feed</h1>
@@ -25,7 +31,7 @@ function HomePage() {
         <p style={{ color: "#888" }}>아티클이 없습니다.</p>
       ) : (
         articles.map((article) => (
-          <ArticleCard key={article.id} article={article} />
+          <ArticleCard key={article.id} article={article} onDelete={handleDelete} />
         ))
       )}
     </div>

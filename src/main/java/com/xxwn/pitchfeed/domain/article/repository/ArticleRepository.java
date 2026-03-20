@@ -12,4 +12,5 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     List<Article> findAllByOrderByPublishedAtDesc();
     List<Article> findByFeedCategoryOrderByPublishedAtDesc(String category);
     List<Article> findByPublishedAtBetween(LocalDateTime start, LocalDateTime end);
+    void deleteByFeedId(Long feedId);
 }

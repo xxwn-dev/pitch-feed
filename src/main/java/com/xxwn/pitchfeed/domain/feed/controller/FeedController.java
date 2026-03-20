@@ -25,7 +25,7 @@ public class FeedController {
             return ResponseEntity.ok(feedService.addFeed(request));
         }
 
-        @DeleteMapping
+        @DeleteMapping("/{id}")
         public ResponseEntity<Void> deleteFeed(@PathVariable Long id) {
             feedService.deleteFeed(id);
             return ResponseEntity.noContent().build();
