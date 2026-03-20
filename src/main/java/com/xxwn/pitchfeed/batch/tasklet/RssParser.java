@@ -10,13 +10,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.io.StringReader;
-import java.net.HttpURLConnection;
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -65,6 +65,28 @@ public class RssParser {
             return entry.getDescription().getValue();
         }
         return null;
+    }
+
+    public String extractOgImage(String articleUrl) {
+        try {
+            String html = restClient.get()
+                    .uri(articleUrl)
+                    .header("User-Agent", "Mozilla/5.0")
+                    .retrieve()
+                    .body(String.class);
+
+            Pattern p1 = Pattern.compile("<meta[^>]*property=[\"']og:image[\"'][^>]*content=[\"']([^\"']+)[\"']");
+            Matcher m1 = p1.matcher(html);
+            if (m1.find()) return m1.group(1);
+
+            Pattern p2 = Pattern.compile("<meta[^>]*content=[\"']([^\"']+)[\"'][^>]*property=[\"']og:image[\"']");
+            Matcher m2 = p2.matcher(html);
+            return m2.find() ? m2.group(1) : null;
+
+        } catch (Exception e) {
+            log.warn("og:image 추출 실패 - url: {}", articleUrl);
+            return null;
+        }
     }
 
     private LocalDateTime convertToLocalDateTime(Date date) {
