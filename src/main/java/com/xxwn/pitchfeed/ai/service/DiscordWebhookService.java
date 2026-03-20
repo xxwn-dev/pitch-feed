@@ -23,9 +23,6 @@ public class DiscordWebhookService {
     @Value("${discord.webhook-url}")
     private String webhookUrl;
 
-    @Value("${app.base-url}")
-    private String baseUrl;
-
     @Value("${app.react-url}")
     private String reactUrl;
 
@@ -45,11 +42,7 @@ public class DiscordWebhookService {
         preview.forEach(article -> {
             Map<String, Object> field = new LinkedHashMap<>();
             field.put("name", article.getTitle());
-            field.put("value", "%s\n[자세히 보기](%s/articles/%d/preview)".formatted(
-                    article.getSummary() != null ? article.getSummary() : "",
-                    baseUrl,
-                    article.getId()
-            ));
+            field.put("value", article.getSummary() != null ? article.getSummary() : "");
             field.put("inline", false);
             fields.add(field);
         });
