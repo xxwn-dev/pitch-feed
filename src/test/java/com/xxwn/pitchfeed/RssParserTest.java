@@ -2,6 +2,7 @@ package com.xxwn.pitchfeed;
 
 import com.xxwn.pitchfeed.batch.tasklet.RssItem;
 import com.xxwn.pitchfeed.batch.tasklet.RssParser;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Slf4j
+@Disabled("로컬 수동 테스트 전용")
 public class RssParserTest {
 
     @Autowired

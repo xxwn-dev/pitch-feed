@@ -4,6 +4,7 @@
     <meta charset="UTF-8"/>
     <meta property="og:title" th:content="${article.title}"/>
     <meta property="og:description" th:content="${article.summary}"/>
+    <meta property="og:image" th:if="${article.imageUrl != null}" th:content="${article.imageUrl}"/>
     <meta property="og:type" content="article"/>
     <meta property="og:url" th:content="${previewUrl}"/>
     <title th:text="${article.title}">Pitch Feed</title>
