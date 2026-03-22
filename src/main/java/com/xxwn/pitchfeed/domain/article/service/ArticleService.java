@@ -4,7 +4,9 @@ import com.xxwn.pitchfeed.domain.article.controller.ArticleResponse;
 import com.xxwn.pitchfeed.domain.article.entity.Article;
 import com.xxwn.pitchfeed.domain.article.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class ArticleService {
 
     public ArticleResponse getArticle(Long id) {
         Article article = articleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Article not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Article not found"));
         return ArticleResponse.from(article);
     }
 

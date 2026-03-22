@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getFeeds, addFeed, deleteFeed } from "../api/articleApi";
 
-function FeedManagePage() {
+function FeedManagePage({ isAdmin, onLogout }) {
   const [feeds, setFeeds] = useState([]);
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [category, setCategory] = useState("");
+  const navigate = useNavigate();
 
   const fetchFeeds = () => {
     getFeeds()
@@ -37,7 +39,41 @@ function FeedManagePage() {
 
   return (
     <div style={{ maxWidth: "800px", margin: "0 auto", padding: "24px" }}>
-      <h1 style={{ marginBottom: "24px" }}> 피드 관리</h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+        <h1>피드 관리</h1>
+        {isAdmin ? (
+          <button
+            onClick={onLogout}
+            style={{
+              padding: "6px 14px",
+              backgroundColor: "#fff",
+              color: "#888",
+              border: "1px solid #ccc",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "13px",
+            }}
+          >
+            로그아웃
+          </button>
+        ) : (
+          <button
+            onClick={() => navigate("/login")}
+            style={{
+              padding: "6px 14px",
+              backgroundColor: "#fff",
+              color: "#1a73e8",
+              border: "1px solid #1a73e8",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "13px",
+            }}
+          >
+            관리자 로그인
+          </button>
+        )}
+      </div>
+
       {/* 피드 추가 */}
       <div
         style={{
