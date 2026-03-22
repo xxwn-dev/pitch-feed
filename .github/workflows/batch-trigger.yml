@@ -12,14 +12,16 @@ jobs:
       - name: Trigger RSS Batch
         id: batch
         run: |
-          PAYLOAD=$(curl -s --fail -X POST ${{ secrets.RENDER_APP_URL }}/api/batch/trigger \
+          curl -s --fail -X POST ${{ secrets.RENDER_APP_URL }}/api/batch/trigger \
                -H "X-Batch-Secret: ${{ secrets.BATCH_SECRET }}" \
-               --max-time 360)
-          echo "payload=$PAYLOAD" >> $GITHUB_OUTPUT
+               --max-time 360 \
+               -o /tmp/discord_payload.json
+          EMPTY=$(cat /tmp/discord_payload.json | jq '. == {}')
+          echo "has_content=$([ "$EMPTY" = "false" ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
 
       - name: Send Discord Notification
-        if: ${{ steps.batch.outputs.payload != '{}' && steps.batch.outputs.payload != '' }}
+        if: steps.batch.outputs.has_content == 'true'
         run: |
           curl -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
                -H "Content-Type: application/json" \
-               -d '${{ steps.batch.outputs.payload }}'
+               -d @/tmp/discord_payload.json
