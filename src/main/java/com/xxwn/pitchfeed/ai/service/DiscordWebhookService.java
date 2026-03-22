@@ -48,6 +48,7 @@ public class DiscordWebhookService {
 
         Map<String, Object> embed = new LinkedHashMap<>();
         embed.put("title", "⚾ 새로운 야구 뉴스 %d건".formatted(limited.size()));
+        embed.put("url", reactUrl);
         embed.put("color", 0x1a73e8);
         embed.put("fields", fields);
 
