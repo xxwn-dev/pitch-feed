@@ -10,6 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger RSS Batch
+        id: batch
         run: |
-          curl -X POST ${{ secrets.RENDER_APP_URL }}/api/batch/trigger \
-               -H "X-Batch-Secret: ${{ secrets.BATCH_SECRET }}"
+          PAYLOAD=$(curl -s --fail -X POST ${{ secrets.RENDER_APP_URL }}/api/batch/trigger \
+               -H "X-Batch-Secret: ${{ secrets.BATCH_SECRET }}" \
+               --max-time 180)
+          echo "payload=$PAYLOAD" >> $GITHUB_OUTPUT
+
+      - name: Send Discord Notification
+        if: ${{ steps.batch.outputs.payload != '{}' && steps.batch.outputs.payload != '' }}
+        run: |
+          curl -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
+               -H "Content-Type: application/json" \
+               -d '${{ steps.batch.outputs.payload }}'

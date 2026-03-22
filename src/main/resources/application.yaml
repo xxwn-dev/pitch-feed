@@ -28,9 +28,6 @@ spring:
 server:
   port: 8080
 
-discord:
-  webhook-url: ${DISCORD_WEBHOOK_URL}
-
 batch:
   secret: ${BATCH_SECRET}
   fetch-limit: 5
@@ -38,3 +35,11 @@ batch:
 app:
   base-url: ${APP_BASE_URL}
   react-url: ${REACT_URL}
+
+admin:
+  username: ${ADMIN_USERNAME}
+  password: ${ADMIN_PASSWORD}
+
+jwt:
+  secret: ${JWT_SECRET}   # 최소 32자 이상 (256-bit)
+  expiration: 86400000    # 24시간 (ms)

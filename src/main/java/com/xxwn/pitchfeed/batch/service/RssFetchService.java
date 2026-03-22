@@ -34,7 +34,7 @@ public class RssFetchService {
     @Value("${batch.fetch-limit:5}")
     private int fetchLimit;
 
-    public void run() {
+    public List<Article> run() {
         List<Feed> feeds = feedRepository.findAllByActiveTrue();
         List<Article> newArticles = new ArrayList<>();
 
@@ -75,7 +75,7 @@ public class RssFetchService {
             feedRepository.save(feed);
         }
 
-        discordWebhookService.send(newArticles);
+        return newArticles;
     }
 
     private boolean isDuplicateByTags(String newTags, List<Article> sameDayArticles) {
