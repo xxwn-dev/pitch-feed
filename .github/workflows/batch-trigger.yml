@@ -14,7 +14,7 @@ jobs:
         run: |
           PAYLOAD=$(curl -s --fail -X POST ${{ secrets.RENDER_APP_URL }}/api/batch/trigger \
                -H "X-Batch-Secret: ${{ secrets.BATCH_SECRET }}" \
-               --max-time 180)
+               --max-time 360)
           echo "payload=$PAYLOAD" >> $GITHUB_OUTPUT
 
       - name: Send Discord Notification
