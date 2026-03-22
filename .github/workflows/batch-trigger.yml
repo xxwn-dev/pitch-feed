@@ -16,8 +16,12 @@ jobs:
                -H "X-Batch-Secret: ${{ secrets.BATCH_SECRET }}" \
                --max-time 360 \
                -o /tmp/discord_payload.json
-          EMPTY=$(cat /tmp/discord_payload.json | jq '. == {}')
-          echo "has_content=$([ "$EMPTY" = "false" ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+          echo "=== Render response ===" && cat /tmp/discord_payload.json
+          if grep -q '"embeds"' /tmp/discord_payload.json; then
+            echo "has_content=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_content=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Send Discord Notification
         if: steps.batch.outputs.has_content == 'true'
