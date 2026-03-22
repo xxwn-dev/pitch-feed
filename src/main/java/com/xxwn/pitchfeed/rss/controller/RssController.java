@@ -1,7 +1,7 @@
-package com.xxwn.pitchfeed.batch.controller;
+package com.xxwn.pitchfeed.rss.controller;
 
 import com.xxwn.pitchfeed.ai.service.DiscordWebhookService;
-import com.xxwn.pitchfeed.batch.service.RssFetchService;
+import com.xxwn.pitchfeed.rss.service.RssFetchService;
 import com.xxwn.pitchfeed.domain.article.entity.Article;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,20 +15,20 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/batch")
+@RequestMapping("/api/rss")
 @RequiredArgsConstructor
-public class BatchController {
+public class RssController {
 
     private final RssFetchService rssFetchService;
     private final DiscordWebhookService discordWebhookService;
 
-    @Value("${batch.secret}")
-    private String batchSecret;
+    @Value("${rss.secret}")
+    private String rssSecret;
 
     @PostMapping("/trigger")
     public ResponseEntity<Map<String, Object>> trigger(
             @RequestHeader("X-Batch-Secret") String secret) {
-        if (!batchSecret.equals(secret)) {
+        if (!rssSecret.equals(secret)) {
             return ResponseEntity.status(401).build();
         }
         List<Article> newArticles = rssFetchService.run();

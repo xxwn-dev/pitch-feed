@@ -1,6 +1,6 @@
-package com.xxwn.pitchfeed.batch;
+package com.xxwn.pitchfeed.rss;
 
-import com.xxwn.pitchfeed.batch.service.RssFetchService;
+import com.xxwn.pitchfeed.rss.service.RssFetchService;
 import com.xxwn.pitchfeed.domain.article.entity.Article;
 import com.xxwn.pitchfeed.domain.article.repository.ArticleRepository;
 import lombok.extern.slf4j.Slf4j;

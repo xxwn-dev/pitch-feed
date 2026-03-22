@@ -1,7 +1,7 @@
 package com.xxwn.pitchfeed;
 
-import com.xxwn.pitchfeed.batch.tasklet.RssItem;
-import com.xxwn.pitchfeed.batch.tasklet.RssParser;
+import com.xxwn.pitchfeed.rss.parser.RssItem;
+import com.xxwn.pitchfeed.rss.parser.RssParser;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.xxwn.pitchfeed.batch.tasklet;
+package com.xxwn.pitchfeed.rss.parser;
 
 import lombok.Builder;
 import lombok.Getter;

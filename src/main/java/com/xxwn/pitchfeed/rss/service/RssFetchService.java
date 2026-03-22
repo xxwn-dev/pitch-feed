@@ -1,9 +1,8 @@
-package com.xxwn.pitchfeed.batch.service;
+package com.xxwn.pitchfeed.rss.service;
 
 import com.xxwn.pitchfeed.ai.service.ArticleSummaryService;
-import com.xxwn.pitchfeed.ai.service.DiscordWebhookService;
-import com.xxwn.pitchfeed.batch.tasklet.RssItem;
-import com.xxwn.pitchfeed.batch.tasklet.RssParser;
+import com.xxwn.pitchfeed.rss.parser.RssItem;
+import com.xxwn.pitchfeed.rss.parser.RssParser;
 import com.xxwn.pitchfeed.domain.article.entity.Article;
 import com.xxwn.pitchfeed.domain.article.repository.ArticleRepository;
 import com.xxwn.pitchfeed.domain.feed.entity.Feed;
@@ -29,9 +28,8 @@ public class RssFetchService {
     private final ArticleRepository articleRepository;
     private final RssParser rssParser;
     private final ArticleSummaryService summaryService;
-    private final DiscordWebhookService discordWebhookService;
 
-    @Value("${batch.fetch-limit:5}")
+    @Value("${rss.fetch-limit:5}")
     private int fetchLimit;
 
     public List<Article> run() {

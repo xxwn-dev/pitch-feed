@@ -28,8 +28,8 @@ spring:
 server:
   port: 8080
 
-batch:
-  secret: ${BATCH_SECRET}
+rss:
+  secret: ${RSS_SECRET}
   fetch-limit: 5
 
 app:

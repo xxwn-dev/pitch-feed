@@ -1,9 +1,8 @@
-package com.xxwn.pitchfeed.batch.tasklet;
+package com.xxwn.pitchfeed.rss.parser;
 
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
-import com.rometools.rome.io.XmlReader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -56,17 +55,17 @@ public class RssParser {
     }
 
     private String extractContents(SyndEntry entry) {
-        if(entry.getContents() != null && !entry.getContents().isEmpty()){
+        if (entry.getContents() != null && !entry.getContents().isEmpty()) {
             return entry.getContents().get(0).getValue();
         }
-        if(entry.getDescription() != null){
+        if (entry.getDescription() != null) {
             return entry.getDescription().getValue();
         }
         return null;
     }
 
     private LocalDateTime convertToLocalDateTime(Date date) {
-        if(date == null) return LocalDateTime.now();
+        if (date == null) return LocalDateTime.now();
         return date.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
