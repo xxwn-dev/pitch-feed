@@ -13,7 +13,7 @@ jobs:
         id: batch
         run: |
           curl -s --fail -X POST ${{ secrets.RENDER_APP_URL }}/api/rss/trigger \
-               -H "X-Batch-Secret: ${{ secrets.BATCH_SECRET }}" \
+               -H "X-Batch-Secret: ${{ secrets.RSS_SECRET }}" \
                --max-time 360 \
                -o /tmp/discord_payload.json
           echo "=== Render response ===" && cat /tmp/discord_payload.json
