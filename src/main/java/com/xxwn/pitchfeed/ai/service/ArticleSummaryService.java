@@ -12,8 +12,6 @@ public class ArticleSummaryService {
 
     private final ChatClient chatClient;
 
-    public record SummaryResult(String summary, String tags) {}
-
     public SummaryResult summarize(String title, String content) {
         if(content == null || content.isBlank()) {
             return new SummaryResult(null, null);

@@ -1,6 +1,7 @@
 package com.xxwn.pitchfeed.rss.service;
 
 import com.xxwn.pitchfeed.ai.service.ArticleSummaryService;
+import com.xxwn.pitchfeed.ai.service.SummaryResult;
 import com.xxwn.pitchfeed.rss.parser.RssItem;
 import com.xxwn.pitchfeed.rss.parser.RssParser;
 import com.xxwn.pitchfeed.domain.article.entity.Article;
@@ -17,6 +18,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -41,13 +47,39 @@ public class RssFetchService {
             List<RssItem> limited = items.size() > fetchLimit ? items.subList(0, fetchLimit) : items;
             log.info("feeds: {} | Parsed: {}건 → 처리 대상: {}건", feed.getName(), items.size(), limited.size());
 
-            for (RssItem item : limited) {
-                if (articleRepository.existsByUrl(item.getUrl())) {
-                    continue;
-                }
+            // 1단계: URL 중복 필터링
+            List<RssItem> candidates = limited.stream()
+                    .filter(item -> !articleRepository.existsByUrl(item.getUrl()))
+                    .toList();
 
-                ArticleSummaryService.SummaryResult result =
-                        summaryService.summarize(item.getTitle(), item.getContent());
+            // 2단계: AI 호출 병렬 실행
+            List<Callable<SummaryResult>> tasks = candidates.stream()
+                    .map(item -> (Callable<SummaryResult>) () ->
+                            summaryService.summarize(item.getTitle(), item.getContent()))
+                    .toList();
+
+            List<SummaryResult> summaryResults;
+            try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+                List<Future<SummaryResult>> futures = executor.invokeAll(tasks);
+                summaryResults = futures.stream()
+                        .map(f -> {
+                            try { return f.get(); }
+                            catch (InterruptedException | ExecutionException e) {
+                                log.error("AI 요약 실패: {}", e.getMessage());
+                                return new SummaryResult(null, null);
+                            }
+                        })
+                        .toList();
+            } catch (InterruptedException e) {
+                log.error("AI 병렬 요약 중단: {}", e.getMessage());
+                Thread.currentThread().interrupt();
+                continue;
+            }
+
+            // 3단계: 중복 체크 & 저장 (순차)
+            for (int i = 0; i < candidates.size(); i++) {
+                RssItem item = candidates.get(i);
+                SummaryResult result = summaryResults.get(i);
 
                 LocalDateTime dayStart = item.getPublishedAt().toLocalDate().atStartOfDay();
                 LocalDateTime dayEnd = dayStart.plusDays(1);
