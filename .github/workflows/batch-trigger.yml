@@ -14,7 +14,7 @@ jobs:
         run: |
           curl -s --fail -X POST ${{ secrets.RENDER_APP_URL }}/api/rss/trigger \
                -H "X-Batch-Secret: ${{ secrets.RSS_SECRET }}" \
-               --max-time 360 \
+               --max-time 600 \
                -o /tmp/discord_payload.json
           echo "=== Render response ===" && cat /tmp/discord_payload.json
           if grep -q '"embeds"' /tmp/discord_payload.json; then
