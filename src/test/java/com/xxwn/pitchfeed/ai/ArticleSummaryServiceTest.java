@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest
-//@Disabled("로컬 수동 테스트 전용")
+@Disabled("로컬 수동 테스트 전용")
 public class ArticleSummaryServiceTest {
 
     @Autowired
