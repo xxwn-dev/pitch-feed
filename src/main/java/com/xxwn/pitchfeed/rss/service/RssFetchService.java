@@ -55,7 +55,7 @@ public class RssFetchService {
             // 2단계: AI 호출 병렬 실행
             List<Callable<SummaryResult>> tasks = candidates.stream()
                     .map(item -> (Callable<SummaryResult>) () ->
-                            summaryService.summarize(item.getTitle(), item.getContent()))
+                            summaryService.summarize(item.getTitle(), item.getContent(), feed.getCategory()))
                     .toList();
 
             List<SummaryResult> summaryResults;

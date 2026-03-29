@@ -12,21 +12,22 @@ public class ArticleSummaryService {
 
     private final ChatClient chatClient;
 
-    public SummaryResult summarize(String title, String content) {
+    public SummaryResult summarize(String title, String content, String category) {
         if(content == null || content.isBlank()) {
             return new SummaryResult(null, null, true);
         }
+        String filterClause = (category != null && !category.isBlank())
+                ? "이 기사가 %s 관련 기사가 아니라면 'SKIP'이라고만 응답해.\n\n".formatted(category)
+                : "";
         String prompt = """
                   다음 스포츠 뉴스 기사를 분석해줘.
-                  이 기사가 KBO 한국프로야구 관련 기사가 아니라면 'SKIP'이라고만 응답해.
-
-                  제목: %s
+                  %s제목: %s
                   내용: %s
 
-                  KBO 한국프로야구 기사라면 아래 형식으로만 응답해:
+                  아래 형식으로만 응답해:
                   요약: (3문장 이내로 핵심 내용 요약)
                   태그: (관련 키워드 3~5개, 콤마로 구분. 예: KBO,한화 이글스,홈런)
-                  """.formatted(title, content);
+                  """.formatted(filterClause, title, content);
         try {
             String response = chatClient.prompt()
                     .user(prompt)
