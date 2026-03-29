@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.xxwn.pitchfeed.rss.service.FetchResult;
 import java.util.List;
 import java.util.Map;
 
@@ -31,8 +32,11 @@ public class RssController {
         if (!rssSecret.equals(secret)) {
             return ResponseEntity.status(401).build();
         }
-        List<Article> newArticles = rssFetchService.run();
-        Map<String, Object> payload = discordWebhookService.buildPayload(newArticles);
+        FetchResult result = rssFetchService.run();
+        Map<String, Object> payload = discordWebhookService.buildPayload(result.articles());
+        if (!result.errors().isEmpty()) {
+            payload.put("errors", result.errors());
+        }
         return ResponseEntity.ok(payload);
     }
 }

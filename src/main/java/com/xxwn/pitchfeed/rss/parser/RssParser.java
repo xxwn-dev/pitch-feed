@@ -42,7 +42,7 @@ public class RssParser {
 
         } catch (Exception e) {
             log.error("RSS 파싱 실패 - url: {}, error: {}", feedUrl, e.getMessage());
-            return Collections.emptyList();
+            throw new RuntimeException("RSS 파싱 실패 [" + feedUrl + "]: " + e.getMessage(), e);
         }
     }
 

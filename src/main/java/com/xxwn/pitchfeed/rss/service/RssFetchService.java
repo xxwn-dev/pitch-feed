@@ -38,12 +38,19 @@ public class RssFetchService {
     @Value("${rss.fetch-limit:5}")
     private int fetchLimit;
 
-    public List<Article> run() {
+    public FetchResult run() {
         List<Feed> feeds = feedRepository.findAllByActiveTrue();
         List<Article> newArticles = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
 
         for (Feed feed : feeds) {
-            List<RssItem> items = rssParser.parse(feed.getUrl());
+            List<RssItem> items;
+            try {
+                items = rssParser.parse(feed.getUrl());
+            } catch (RuntimeException e) {
+                errors.add(e.getMessage());
+                continue;
+            }
             List<RssItem> limited = items.size() > fetchLimit ? items.subList(0, fetchLimit) : items;
             log.info("feeds: {} | Parsed: {}건 → 처리 대상: {}건", feed.getName(), items.size(), limited.size());
 
@@ -110,7 +117,7 @@ public class RssFetchService {
             feedRepository.save(feed);
         }
 
-        return newArticles;
+        return new FetchResult(newArticles, errors);
     }
 
     private boolean isDuplicateByTags(String newTags, List<Article> sameDayArticles) {
