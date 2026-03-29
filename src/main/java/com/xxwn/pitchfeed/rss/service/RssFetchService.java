@@ -50,7 +50,6 @@ public class RssFetchService {
             // 1단계: URL 중복 필터링
             List<RssItem> candidates = limited.stream()
                     .filter(item -> !articleRepository.existsByUrl(item.getUrl()))
-                    .filter(item -> feed.matchesKeywords(item.getTitle(), item.getContent()))
                     .toList();
 
             // 2단계: AI 호출 병렬 실행
@@ -67,7 +66,7 @@ public class RssFetchService {
                             try { return f.get(); }
                             catch (InterruptedException | ExecutionException e) {
                                 log.error("AI 요약 실패: {}", e.getMessage());
-                                return new SummaryResult(null, null);
+                                return new SummaryResult(null, null, true);
                             }
                         })
                         .toList();
@@ -81,6 +80,11 @@ public class RssFetchService {
             for (int i = 0; i < candidates.size(); i++) {
                 RssItem item = candidates.get(i);
                 SummaryResult result = summaryResults.get(i);
+
+                if (result.skip()) {
+                    log.info("AI 분류 스킵: {}", item.getTitle());
+                    continue;
+                }
 
                 LocalDateTime dayStart = item.getPublishedAt().toLocalDate().atStartOfDay();
                 LocalDateTime dayEnd = dayStart.plusDays(1);

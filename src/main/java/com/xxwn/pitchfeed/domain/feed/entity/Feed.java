@@ -1,7 +1,6 @@
 package com.xxwn.pitchfeed.domain.feed.entity;
 
 import jakarta.persistence.*;
-import java.util.Arrays;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,16 +46,7 @@ public class Feed {
         this.keywords = keywords;
     }
 
-    public boolean matchesKeywords(String title, String content) {
-        if (keywords == null || keywords.isBlank()) return true;
-        String text = (title == null ? "" : title) + " " + (content == null ? "" : content);
-        return Arrays.stream(keywords.split(","))
-                .map(String::trim)
-                .filter(k -> !k.isBlank())
-                .anyMatch(text::contains);
-    }
-
-    public void updateLastFetchedAt() {
+public void updateLastFetchedAt() {
         this.lastFetchedAt = LocalDateTime.now();
     }
 

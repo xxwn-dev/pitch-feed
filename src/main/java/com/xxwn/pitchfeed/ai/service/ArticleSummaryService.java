@@ -14,15 +14,16 @@ public class ArticleSummaryService {
 
     public SummaryResult summarize(String title, String content) {
         if(content == null || content.isBlank()) {
-            return new SummaryResult(null, null);
+            return new SummaryResult(null, null, true);
         }
         String prompt = """
-                  다음 야구 뉴스 기사를 분석해줘.
+                  다음 스포츠 뉴스 기사를 분석해줘.
+                  이 기사가 KBO 한국프로야구 관련 기사가 아니라면 'SKIP'이라고만 응답해.
 
                   제목: %s
                   내용: %s
 
-                  아래 형식으로만 응답해:
+                  KBO 한국프로야구 기사라면 아래 형식으로만 응답해:
                   요약: (3문장 이내로 핵심 내용 요약)
                   태그: (관련 키워드 3~5개, 콤마로 구분. 예: KBO,한화 이글스,홈런)
                   """.formatted(title, content);
@@ -34,11 +35,14 @@ public class ArticleSummaryService {
             return parseResponse(response);
         } catch (Exception e) {
             log.error("AI Summary Failed - Summary: {}, error: {}", title, e.getMessage());
-            return new SummaryResult(null, null);
+            return new SummaryResult(null, null, true);
         }
     }
 
     private SummaryResult parseResponse(String response) {
+        if (response == null || response.strip().equals("SKIP")) {
+            return new SummaryResult(null, null, true);
+        }
         String summary = null;
         String tags = null;
 
@@ -49,6 +53,6 @@ public class ArticleSummaryService {
                 tags = line.replace("태그:", "").trim();
             }
         }
-        return new SummaryResult(summary, tags);
+        return new SummaryResult(summary, tags, false);
     }
 }
