@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 public record FeedRequest(
         @NotBlank String name,
         @NotBlank String url,
-        String category
+        String category,
+        String keywords
 ) {
 }

@@ -50,6 +50,7 @@ public class RssFetchService {
             // 1단계: URL 중복 필터링
             List<RssItem> candidates = limited.stream()
                     .filter(item -> !articleRepository.existsByUrl(item.getUrl()))
+                    .filter(item -> feed.matchesKeywords(item.getTitle(), item.getContent()))
                     .toList();
 
             // 2단계: AI 호출 병렬 실행

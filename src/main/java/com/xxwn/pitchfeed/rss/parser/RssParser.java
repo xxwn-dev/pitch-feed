@@ -14,6 +14,7 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,8 +32,9 @@ public class RssParser {
                     .retrieve()
                     .body(String.class);
 
+            String sanitized = sanitizeXml(feedContent);
             SyndFeedInput input = new SyndFeedInput();
-            SyndFeed feed = input.build(new StringReader(feedContent));
+            SyndFeed feed = input.build(new StringReader(sanitized));
 
             return feed.getEntries().stream()
                     .map(this::toRssItem)
@@ -62,6 +64,20 @@ public class RssParser {
             return entry.getDescription().getValue();
         }
         return null;
+    }
+
+    private String sanitizeXml(String xml) {
+        if (xml == null) return "";
+        xml = wrapFieldInCdata(xml, "description");
+        xml = wrapFieldInCdata(xml, "content:encoded");
+        return xml;
+    }
+
+    private String wrapFieldInCdata(String xml, String tag) {
+        return Pattern.compile(
+                "<" + tag + ">(?!\\s*<!\\[CDATA\\[)(.*?)</" + tag + ">",
+                Pattern.DOTALL
+        ).matcher(xml).replaceAll("<" + tag + "><![CDATA[$1]]></" + tag + ">");
     }
 
     private LocalDateTime convertToLocalDateTime(Date date) {

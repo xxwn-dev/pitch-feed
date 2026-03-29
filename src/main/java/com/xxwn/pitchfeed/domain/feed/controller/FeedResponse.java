@@ -9,6 +9,7 @@ public record FeedResponse(
         String name,
         String url,
         String category,
+        String keywords,
         boolean active,
         LocalDateTime lastFetchedAt
 ) {
@@ -18,6 +19,7 @@ public record FeedResponse(
                 feed.getName(),
                 feed.getUrl(),
                 feed.getCategory(),
+                feed.getKeywords(),
                 feed.isActive(),
                 feed.getLastFetchedAt()
         );
