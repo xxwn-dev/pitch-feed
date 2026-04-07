@@ -24,12 +24,18 @@ public class Feed {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String url;
 
     private String category;
 
     private String keywords;
+
+    private String query;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(255) default 'RSS'")
+    private SourceType sourceType = SourceType.RSS;
 
     private boolean active = true;
 
@@ -39,11 +45,13 @@ public class Feed {
     private LocalDateTime createdAt;
 
     @Builder
-    public Feed(String name, String url, String category, String keywords) {
+    public Feed(String name, String url, String category, String keywords, String query, SourceType sourceType) {
         this.name = name;
         this.url = url;
         this.category = category;
         this.keywords = keywords;
+        this.query = query;
+        this.sourceType = sourceType != null ? sourceType : SourceType.RSS;
     }
 
 public void updateLastFetchedAt() {

@@ -40,6 +40,27 @@ public class ArticleSummaryService {
         }
     }
 
+    public boolean classify(String title, String description, String category) {
+        if (category == null || category.isBlank()) return false;
+        String prompt = """
+                다음 뉴스 기사가 %s 관련 기사인지 판단해줘.
+                제목: %s
+                내용: %s
+
+                관련 기사라면 'KEEP', 아니라면 'SKIP'이라고만 응답해.
+                """.formatted(category, title, description);
+        try {
+            String response = chatClient.prompt()
+                    .user(prompt)
+                    .call()
+                    .content();
+            return response != null && response.strip().startsWith("SKIP");
+        } catch (Exception e) {
+            log.error("AI Classify Failed - title: {}, error: {}", title, e.getMessage());
+            return false;
+        }
+    }
+
     private SummaryResult parseResponse(String response) {
         if (response == null || response.strip().equals("SKIP")) {
             return new SummaryResult(null, null, true);

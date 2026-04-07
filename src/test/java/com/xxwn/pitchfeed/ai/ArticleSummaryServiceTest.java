@@ -3,7 +3,7 @@ package com.xxwn.pitchfeed.ai;
 import com.xxwn.pitchfeed.ai.service.ArticleSummaryService;
 import com.xxwn.pitchfeed.ai.service.SummaryResult;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest
-@Disabled("로컬 수동 테스트 전용")
+@Tag("integration")
 public class ArticleSummaryServiceTest {
 
     @Autowired

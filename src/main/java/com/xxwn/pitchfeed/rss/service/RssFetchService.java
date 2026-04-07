@@ -7,6 +7,7 @@ import com.xxwn.pitchfeed.rss.parser.RssParser;
 import com.xxwn.pitchfeed.domain.article.entity.Article;
 import com.xxwn.pitchfeed.domain.article.repository.ArticleRepository;
 import com.xxwn.pitchfeed.domain.feed.entity.Feed;
+import com.xxwn.pitchfeed.domain.feed.entity.SourceType;
 import com.xxwn.pitchfeed.domain.feed.repository.FeedRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +36,14 @@ public class RssFetchService {
     private final RssParser rssParser;
     private final ArticleSummaryService summaryService;
 
-    @Value("${rss.fetch-limit:5}")
-    private int fetchLimit;
+    @Value("${rss.scan-limit:20}")
+    private int scanLimit;
+
+    @Value("${rss.save-limit:5}")
+    private int saveLimit;
 
     public FetchResult run() {
-        List<Feed> feeds = feedRepository.findAllByActiveTrue();
+        List<Feed> feeds = feedRepository.findAllBySourceTypeAndActiveTrue(SourceType.RSS);
         List<Article> newArticles = new ArrayList<>();
         List<String> errors = new ArrayList<>();
 
@@ -51,13 +55,12 @@ public class RssFetchService {
                 errors.add(e.getMessage());
                 continue;
             }
-            List<RssItem> limited = items.size() > fetchLimit ? items.subList(0, fetchLimit) : items;
-            log.info("feeds: {} | Parsed: {}건 → 처리 대상: {}건", feed.getName(), items.size(), limited.size());
-
-            // 1단계: URL 중복 필터링
-            List<RssItem> candidates = limited.stream()
+            // 1단계: URL 중복 필터링 → 신규 항목만 scanLimit건 처리
+            List<RssItem> candidates = items.stream()
                     .filter(item -> !articleRepository.existsByUrl(item.getUrl()))
+                    .limit(scanLimit)
                     .toList();
+            log.info("feeds: {} | Parsed: {}건 → 신규: {}건", feed.getName(), items.size(), candidates.size());
 
             // 2단계: AI 호출 병렬 실행
             List<Callable<SummaryResult>> tasks = candidates.stream()
@@ -83,8 +86,11 @@ public class RssFetchService {
                 continue;
             }
 
-            // 3단계: 중복 체크 & 저장 (순차)
+            // 3단계: 중복 체크 & 저장 (순차, 저장 건수 saveLimit 이하)
+            int savedCount = 0;
             for (int i = 0; i < candidates.size(); i++) {
+                if (savedCount >= saveLimit) break;
+
                 RssItem item = candidates.get(i);
                 SummaryResult result = summaryResults.get(i);
 
@@ -112,7 +118,9 @@ public class RssFetchService {
                 article.addSummary(result.summary(), result.tags());
                 articleRepository.save(article);
                 newArticles.add(article);
+                savedCount++;
             }
+            log.info("feeds: {} | AI 처리: {}건 → 저장: {}건", feed.getName(), candidates.size(), savedCount);
             feed.updateLastFetchedAt();
             feedRepository.save(feed);
         }

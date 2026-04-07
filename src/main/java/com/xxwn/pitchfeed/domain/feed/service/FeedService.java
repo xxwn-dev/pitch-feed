@@ -30,6 +30,8 @@ public class FeedService {
                 .url(request.url())
                 .category(request.category())
                 .keywords(request.keywords())
+                .query(request.query())
+                .sourceType(request.sourceType())
                 .build();
         return FeedResponse.from(feedRepository.save(feed));
     }

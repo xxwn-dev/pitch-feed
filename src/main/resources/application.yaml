@@ -30,7 +30,13 @@ server:
 
 rss:
   secret: ${RSS_SECRET}
-  fetch-limit: 5
+  scan-limit: 20   # AI에 보낼 신규 항목 최대 수
+  save-limit: 5    # 실제 저장할 최대 수
+
+naver:
+  client-id: ${NAVER_CLIENT_ID}
+  client-secret: ${NAVER_CLIENT_SECRET}
+  search-display: 20   # 한 번에 가져올 건수 (max 100)
 
 app:
   base-url: ${APP_BASE_URL}
