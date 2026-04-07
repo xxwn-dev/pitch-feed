@@ -22,6 +22,10 @@ rss:
   secret: test-rss-secret
   fetch-limit: 5
 
+naver:
+  client-id: test-naver-client-id
+  client-secret: test-naver-client-secret
+
 app:
   base-url: http://localhost:8080
   react-url: http://localhost:5173
