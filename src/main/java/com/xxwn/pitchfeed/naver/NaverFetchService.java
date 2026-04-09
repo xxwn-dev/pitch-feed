@@ -12,8 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.xxwn.pitchfeed.global.util.SimHashUtil;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -46,11 +52,21 @@ public class NaverFetchService {
                 continue;
             }
 
+            LocalDateTime dayStart = LocalDate.now().atStartOfDay();
+            LocalDateTime dayEnd = dayStart.plusDays(1);
+            Set<Long> sameDayHashes = new HashSet<>(articleRepository.findTitleHashesByPublishedAtBetween(dayStart, dayEnd));
+
             int savedCount = 0;
             for (NaverNewsItem item : items) {
                 if (savedCount >= saveLimit) break;
                 if (articleRepository.existsByUrl(item.link())) continue;
                 if (articleSummaryService.classify(item.title(), item.description(), feed.getCategory())) continue;
+
+                long titleHash = SimHashUtil.compute(item.title());
+                if (SimHashUtil.isDuplicateInSet(titleHash, sameDayHashes)) {
+                    log.info("SimHash 중복으로 건너뜀: {}", item.title());
+                    continue;
+                }
 
                 Article article = Article.builder()
                         .feed(feed)
@@ -60,7 +76,9 @@ public class NaverFetchService {
                         .publishedAt(item.publishedAt())
                         .build();
                 article.addSummary(item.description(), null);
+                article.setTitleHash(titleHash);
                 articleRepository.save(article);
+                sameDayHashes.add(titleHash);
                 newArticles.add(article);
                 savedCount++;
             }

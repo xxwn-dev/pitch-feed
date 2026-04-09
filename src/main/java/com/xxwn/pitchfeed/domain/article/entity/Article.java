@@ -44,6 +44,9 @@ public class Article {
     @Column(columnDefinition = "TEXT")
     private String tags;
 
+    @Column(name = "title_hash")
+    private Long titleHash;
+
     private LocalDateTime publishedAt;
 
     @CreatedDate
@@ -62,5 +65,9 @@ public class Article {
     public void addSummary(String summary, String tags){
         this.summary = summary;
         this.tags = tags;
+    }
+
+    public void setTitleHash(long hash) {
+        this.titleHash = hash;
     }
 }

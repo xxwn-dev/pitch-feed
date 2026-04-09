@@ -1,6 +1,7 @@
 package com.xxwn.pitchfeed.rss.service;
 
 import com.xxwn.pitchfeed.ai.service.ArticleSummaryService;
+import com.xxwn.pitchfeed.global.util.SimHashUtil;
 import com.xxwn.pitchfeed.ai.service.SummaryResult;
 import com.xxwn.pitchfeed.rss.parser.RssItem;
 import com.xxwn.pitchfeed.rss.parser.RssParser;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -87,6 +89,12 @@ public class RssFetchService {
             }
 
             // 3단계: 중복 체크 & 저장 (순차, 저장 건수 saveLimit 이하)
+            LocalDateTime feedDayStart = candidates.isEmpty()
+                    ? LocalDateTime.now().toLocalDate().atStartOfDay()
+                    : candidates.get(0).getPublishedAt().toLocalDate().atStartOfDay();
+            LocalDateTime feedDayEnd = feedDayStart.plusDays(1);
+            Set<Long> sameDayHashes = new HashSet<>(articleRepository.findTitleHashesByPublishedAtBetween(feedDayStart, feedDayEnd));
+
             int savedCount = 0;
             for (int i = 0; i < candidates.size(); i++) {
                 if (savedCount >= saveLimit) break;
@@ -107,6 +115,12 @@ public class RssFetchService {
                     continue;
                 }
 
+                long titleHash = SimHashUtil.compute(item.getTitle());
+                if (SimHashUtil.isDuplicateInSet(titleHash, sameDayHashes)) {
+                    log.info("SimHash 중복으로 건너뜀: {}", item.getTitle());
+                    continue;
+                }
+
                 Article article = Article.builder()
                         .feed(feed)
                         .title(item.getTitle())
@@ -116,7 +130,9 @@ public class RssFetchService {
                         .publishedAt(item.getPublishedAt())
                         .build();
                 article.addSummary(result.summary(), result.tags());
+                article.setTitleHash(titleHash);
                 articleRepository.save(article);
+                sameDayHashes.add(titleHash);
                 newArticles.add(article);
                 savedCount++;
             }
