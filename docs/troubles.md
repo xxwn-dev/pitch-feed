@@ -106,7 +106,8 @@
         idle-timeout: 10000  # 10초 후 idle 커넥션 반환
         connection-timeout: 30000
   ```
-  - pitch-feed DB_URL도 pooler URL(`-pooler.`)로 변경 (Render 환경변수)
+  - 두 프로젝트 모두 이미 pooler URL(`-pooler.`) 사용 중이었으므로 DB_URL 변경 불필요
+    - pooler(PgBouncer)는 트랜잭션이 없을 때 실제 DB 커넥션을 반환 → `minimum-idle: 0`과 이중으로 작용
   - bb-rules-bot은 Discord 봇 특성상 질문이 없는 유휴 시간에 커넥션 반환 → Neon suspend → 멘션 시 콜드스타트 500ms~1s 추가되나 RAG+LLM 응답 시간에 묻혀 체감 없음
 
 ---
